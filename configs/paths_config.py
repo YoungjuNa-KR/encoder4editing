@@ -17,12 +17,18 @@ dataset_paths = {
 
 	#  Cats Dataset (In the paper: LSUN Cat)
 	'cats_train': '',
-	'cats_test': ''
+	'cats_test': '',
+ 
+	'mpii_train': 'data/eth_256_train',
+	'mpii_test': 'data/eth_256_val'
 }
 
 model_paths = {
 	'stylegan_ffhq': 'pretrained_models/stylegan2-ffhq-config-f.pt',
 	'ir_se50': 'pretrained_models/model_ir_se50.pth',
 	'shape_predictor': 'pretrained_models/shape_predictor_68_face_landmarks.dat',
-	'moco': 'pretrained_models/moco_v2_800ep_pretrain.pth'
+	'moco': 'pretrained_models/moco_v2_800ep_pretrain.pt',
+ 
+	# custom model
+	'stylegan_mpii': 'pretrained_models/network-stapshot-018200.pt'
 }

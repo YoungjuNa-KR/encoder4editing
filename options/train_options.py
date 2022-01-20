@@ -33,7 +33,7 @@ class TrainOptions:
 
         self.parser.add_argument('--stylegan_weights', default=model_paths['stylegan_ffhq'], type=str,
                                  help='Path to StyleGAN model weights')
-        self.parser.add_argument('--stylegan_size', default=1024, type=int,
+        self.parser.add_argument('--stylegan_size', default=256, type=int,
                                  help='size of pretrained StyleGAN Generator')
         self.parser.add_argument('--checkpoint_path', default=None, type=str, help='Path to pSp model checkpoint')
 

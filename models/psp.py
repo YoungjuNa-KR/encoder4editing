@@ -4,7 +4,11 @@ matplotlib.use('Agg')
 import torch
 from torch import nn
 from models.encoders import psp_encoders
-from models.stylegan2.model import Generator
+''' 기존에 있던 Generator '''
+from models.stylegan2.model import Generator 
+'''styleGAN-ada-pytorch Generator'''
+# from models.stylegan2.ada_pytorch_model import Generator
+import dnnlib
 from configs.paths_config import model_paths
 
 
@@ -22,10 +26,14 @@ class pSp(nn.Module):
         self.opts = opts
         # Define architecture
         self.encoder = self.set_encoder()
-        self.decoder = Generator(opts.stylegan_size, 512, 8, channel_multiplier=2)
+        # G = dnnlib.util.construct_class_by_name(**G_kwargs, **common_kwargs).train().requires_grad_(False).to(device) # subclass of torch.nn.Module
+        self.decoder = Generator(opts.stylegan_size, 512, 2, channel_multiplier=2)  #512 -> 256으로 변경함
         self.face_pool = torch.nn.AdaptiveAvgPool2d((256, 256))
         # Load weights if needed
+        
+        print(self.decoder) # 추가됨
         self.load_weights()
+        
 
     def set_encoder(self):
         if self.opts.encoder_type == 'GradualStyleEncoder':

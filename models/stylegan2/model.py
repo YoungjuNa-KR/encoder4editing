@@ -386,6 +386,18 @@ class Generator(nn.Module):
 
         self.style = nn.Sequential(*layers)
 
+        # self.channels = {
+        #     4: 512,
+        #     8: 512,
+        #     16: 512,
+        #     32: 512,
+        #     64: 256 * channel_multiplier,
+        #     128: 128 * channel_multiplier,
+        #     256: 64 * channel_multiplier,
+        #     512: 32 * channel_multiplier,
+        #     1024: 16 * channel_multiplier,
+        # }
+        
         self.channels = {
             4: 512,
             8: 512,
@@ -419,9 +431,25 @@ class Generator(nn.Module):
             shape = [1, 1, 2 ** res, 2 ** res]
             self.noises.register_buffer(f'noise_{layer_idx}', torch.randn(*shape))
 
+        ''' ------------------------ FROM HERE ------------------------ '''
+        print("반복 횟수: ", self.log_size - 3)
         for i in range(3, self.log_size + 1):
             out_channel = self.channels[2 ** i]
-
+            
+            print("n:", i, ":", "in:", in_channel, "out:", out_channel)
+            
+            if i == 6:
+                in_channel = 512
+                out_channel = 256
+            elif i == 7:
+                in_channel = 256
+                out_channel = 128
+            elif i == 8:
+                in_channel = 128
+                out_channel = 64
+                
+            print("i:", i)
+            
             self.convs.append(
                 StyledConv(
                     in_channel,
@@ -432,15 +460,19 @@ class Generator(nn.Module):
                     blur_kernel=blur_kernel,
                 )
             )
-
+            
             self.convs.append(
                 StyledConv(
                     out_channel, out_channel, 3, style_dim, blur_kernel=blur_kernel
                 )
             )
-
             self.to_rgbs.append(ToRGB(out_channel, style_dim))
 
+            
+            
+            
+            print(self.convs)
+            print("\n"*3)
             in_channel = out_channel
 
         self.n_latent = self.log_size * 2 - 2

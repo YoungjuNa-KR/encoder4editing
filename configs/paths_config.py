@@ -19,16 +19,22 @@ dataset_paths = {
 	'cats_train': '',
 	'cats_test': '',
  
-	'mpii_train': 'data/eth_256_train',
-	'mpii_test': 'data/eth_256_val'
+	'mpii_train': '/home/vimlab/youngju/encoder4editing/data/eth_256/train',
+	'mpii_test': '/home/vimlab/youngju/encoder4editing/data/eth_256/val',
+
+	'eth_256_train' : '/home/vimlab/youngju/encoder4editing/data/eth_256/train',
+	'eth_256_val' : '/home/vimlab/youngju/encoder4editing/data/eth_256/validation'
 }
 
 model_paths = {
-	'stylegan_ffhq': 'pretrained_models/stylegan2-ffhq-config-f.pt',
-	'ir_se50': 'pretrained_models/model_ir_se50.pth',
-	'shape_predictor': 'pretrained_models/shape_predictor_68_face_landmarks.dat',
-	'moco': 'pretrained_models/moco_v2_800ep_pretrain.pt',
+	'stylegan_ffhq': './pretrained_models/stylegan2-ffhq-config-f.pt',
+	'ir_se50': './pretrained_models/model_ir_se50.pth',
+	'shape_predictor': './pretrained_models/shape_predictor_68_face_landmarks.dat',
+	'moco': './pretrained_models/moco_v2_800ep_pretrain.pt',
+	'gaze': './pretrained_models/gaze_model.pt',
+ 
  
 	# custom model
-	'stylegan_mpii': 'pretrained_models/network-stapshot-018200.pt'
+	'stylegan_mpii': './pretrained_models/network-stapshot-018200.pt',
+	'stylegan_eth' : './pretrained_models/network-stapstho-018200.pt'
 }

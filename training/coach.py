@@ -12,7 +12,7 @@ from torch.utils.tensorboard import SummaryWriter
 import torch.nn.functional as F
 
 from utils import common, train_utils
-from criteria import id_loss, moco_loss
+from criteria import id_loss, moco_loss, gaze_dist_loss
 from configs import data_configs
 from datasets.images_dataset import ImagesDataset
 from criteria.lpips.lpips import LPIPS
@@ -24,7 +24,6 @@ from training.ranger import Ranger
 
 random.seed(0)
 torch.manual_seed(0)
-
 
 class Coach:
     def __init__(self, opts, prev_train_checkpoint=None):
@@ -41,10 +40,15 @@ class Coach:
         if self.opts.lpips_lambda > 0:
             self.lpips_loss = LPIPS(net_type=self.opts.lpips_type).to(self.device).eval()
         if self.opts.id_lambda > 0:
-            if 'ffhq' in self.opts.dataset_type or 'celeb' in self.opts.dataset_type:
+            if 'ffhq' in self.opts.dataset_type or 'celeb' in self.opts.dataset_type or 'mpii_encode' in self.opts.dataset_type or 'eth_256_encode' in self.opts.dataset_type:  # 여기에 얼굴 데이터 추가해야 함. (ArcFace를 사용하기 위해서)
                 self.id_loss = id_loss.IDLoss().to(self.device).eval()
-            else:
+            else: #MOCO LOSS는 car, horses 등 사람이 아닌 경우에 사용함.
                 self.id_loss = moco_loss.MocoLoss(opts).to(self.device).eval()
+        
+        ''' for gaze distortion loss'''
+        if self.opts.gd_lambda > 0:
+            self.gd_loss = gaze_dist_loss.GazeDistortionLoss().to(self.device).eval()
+        
         self.mse_loss = nn.MSELoss().to(self.device).eval()
 
         # Initialize optimizer
@@ -103,16 +107,21 @@ class Coach:
         print(f'Resuming training from step {self.global_step}')
 
     def train(self):
+        print("training starts")
+        
         self.net.train()
         if self.opts.progressive_steps:
             self.check_for_progressive_training_update()
         while self.global_step < self.opts.max_steps:
             for batch_idx, batch in enumerate(self.train_dataloader):
+                _, _, labels = batch       
+                batch = batch[:-1]
+                
                 loss_dict = {}
                 if self.is_training_discriminator():
                     loss_dict = self.train_discriminator(batch)
-                x, y, y_hat, latent = self.forward(batch)
-                loss, encoder_loss_dict, id_logs = self.calc_loss(x, y, y_hat, latent)
+                x, y, y_hat, latent = self.forward(batch)  
+                loss, encoder_loss_dict, id_logs = self.calc_loss(x, y, y_hat, latent, labels)
                 loss_dict = {**loss_dict, **encoder_loss_dict}
                 self.optimizer.zero_grad()
                 loss.backward()
@@ -159,12 +168,14 @@ class Coach:
         self.net.eval()
         agg_loss_dict = []
         for batch_idx, batch in enumerate(self.test_dataloader):
+            img_names = batch[-1]
+            batch = batch[:-1]
             cur_loss_dict = {}
             if self.is_training_discriminator():
                 cur_loss_dict = self.validate_discriminator(batch)
             with torch.no_grad():
-                x, y, y_hat, latent = self.forward(batch)
-                loss, cur_encoder_loss_dict, id_logs = self.calc_loss(x, y, y_hat, latent)
+                x, y, y_hat, latent = self.forward(batch)  # x: input image, y: GT, y_hat: genearted image, latent: latent vector
+                loss, cur_encoder_loss_dict, id_logs = self.calc_loss(x, y, y_hat, latent, img_names)
                 cur_loss_dict = {**cur_loss_dict, **cur_encoder_loss_dict}
             agg_loss_dict.append(cur_loss_dict)
 
@@ -229,12 +240,14 @@ class Coach:
         print("Number of test samples: {}".format(len(test_dataset)))
         return train_dataset, test_dataset
 
-    def calc_loss(self, x, y, y_hat, latent):
+
+    def calc_loss(self, x, y, y_hat, latent, labels):
         loss_dict = {}
         loss = 0.0
         id_logs = None
         if self.is_training_discriminator():  # Adversarial loss
             loss_disc = 0.
+            
             dims_to_discriminate = self.get_dims_to_discriminate() if self.is_progressive_training() else \
                 list(range(self.net.decoder.n_latent))
 
@@ -273,16 +286,27 @@ class Coach:
             loss_lpips = self.lpips_loss(y_hat, y)
             loss_dict['loss_lpips'] = float(loss_lpips)
             loss += loss_lpips * self.opts.lpips_lambda
+            
+        if self.opts.gd_lambda > 0:  # gaze distortion loss
+            loss_gd, gd_logs = self.gd_loss(y_hat, y, x, labels)
+            loss_dict['loss_gd'] = float(loss_gd)
+            loss += loss_gd * self.opts.gd_lambda
+            
+        # print(loss_dict)
+        # print("loss")
+        # print(loss)
+        
         loss_dict['loss'] = float(loss)
         return loss, loss_dict, id_logs
 
+    # input batch -> x, y (x is a image and y_hat is a encoded image)
     def forward(self, batch):
         x, y = batch
         x, y = x.to(self.device).float(), y.to(self.device).float()
-        y_hat, latent = self.net.forward(x, return_latents=True)
+        y_hat, latent = self.net.forward(x, return_latents=True) # y_hat is generated image
         if self.opts.dataset_type == "cars_encode":
             y_hat = y_hat[:, :, 32:224, :]
-        return x, y, y_hat, latent
+        return x, y, y_hat, latent # x: input image, y: GT, y_hat: genearted image, latent: latent vector
 
     def log_metrics(self, metrics_dict, prefix):
         for key, value in metrics_dict.items():
@@ -338,6 +362,7 @@ class Coach:
                 save_dict['discriminator_optimizer_state_dict'] = self.discriminator_optimizer.state_dict()
         return save_dict
 
+    
     def get_dims_to_discriminate(self):
         deltas_starting_dimensions = self.net.encoder.get_deltas_starting_dimensions()
         return deltas_starting_dimensions[:self.net.encoder.progressive_stage.value + 1]
@@ -374,6 +399,7 @@ class Coach:
         for p in model.parameters():
             p.requires_grad = flag
 
+    # discriminator means generator
     def train_discriminator(self, batch):
         loss_dict = {}
         x, _ = batch
@@ -437,3 +463,4 @@ class Coach:
         if fake_w.ndim == 3:
             fake_w = fake_w[:, 0, :]
         return real_w, fake_w
+

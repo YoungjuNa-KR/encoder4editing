@@ -19,9 +19,10 @@ class EncodeTransforms(TransformsConfig):
 
 	def get_transforms(self):
 		transforms_dict = {
+			# GROUND TRUTH IMAGE TRANSFORM
 			'transform_gt_train': transforms.Compose([
 				transforms.Resize((256, 256)),
-				transforms.RandomHorizontalFlip(0.5),
+				transforms.RandomHorizontalFlip(0.5),  # data augmentation
 				transforms.ToTensor(),
 				transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])]),
 			'transform_source': None,

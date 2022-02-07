@@ -17,24 +17,6 @@ python scripts/train.py \
 
 
 
-# 512X512
-
-python scripts/train.py \
---dataset_type mpii_encode \
---exp_dir new/experiment/directory \
---start_from_latent_avg \
---use_w_pool \
---w_discriminator_lambda 0.1 \
---progressive_start 20000 \
---id_lambda 0.5 \
---val_interval 10000 \
---max_steps 200000 \
---stylegan_size 256 \
---stylegan_weights ./pretrained_models/512_demo.pkl \
---workers 8 \
---batch_size 8 \
---test_batch_size 4 \
---test_workers 4 
 
 
-python scripts/train.py --dataset_type mpii_encode --exp_dir new/experiment/directory --start_from_latent_avg --use_w_pool --w_discriminator_lambda 0.1 --progressive_start 20000 --id_lambda 0.5 --val_interval 10000 --max_steps 200000 --stylegan_size 256 --stylegan_weights ./pretrained_models/network-stapshot-018200.pt --workers 8 --batch_size 1 --test_batch_size 4 --test_workers 4
+python scripts/train.py --dataset_type eth_256_encode --exp_dir new/experiment/eth_256/gd_test --start_from_latent_avg --use_w_pool --w_discriminator_lambda 0.1 --progressive_start 20000 --id_lambda 0.5 --val_interval 10000 --max_steps 200000 --stylegan_size 256 --stylegan_weights ~/youngju/encoder4editing/pretrained_models/network-stapshot-018200.pt --workers 2 --batch_size 3 --test_batch_size 2 --test_workers 2 --checkpoint_path ./new/experiment/eth_256/resume0123/checkpoints/best_model.pt

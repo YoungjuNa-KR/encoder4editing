@@ -26,10 +26,11 @@ class TrainOptions:
         self.parser.add_argument('--start_from_latent_avg', action='store_true',
                                  help='Whether to add average latent vector to generate codes from encoder.')
         self.parser.add_argument('--lpips_type', default='alex', type=str, help='LPIPS backbone')
-
         self.parser.add_argument('--lpips_lambda', default=0.8, type=float, help='LPIPS loss multiplier factor')
         self.parser.add_argument('--id_lambda', default=0.1, type=float, help='ID loss multiplier factor')
         self.parser.add_argument('--l2_lambda', default=1.0, type=float, help='L2 loss multiplier factor')
+        ''' for gaze distortion loss '''
+        self.parser.add_argument('--gd_lambda', default=0.01, type=float, help='Gaze distortion loss multiplier factor')
 
         self.parser.add_argument('--stylegan_weights', default=model_paths['stylegan_ffhq'], type=str,
                                  help='Path to StyleGAN model weights')
@@ -65,7 +66,7 @@ class TrainOptions:
                                  help="The training steps of training new deltas. steps[i] starts the delta_i training")
         self.parser.add_argument('--progressive_start', type=int, default=None,
                                  help="The training step to start training the deltas, overrides progressive_steps")
-        self.parser.add_argument('--progressive_step_every', type=int, default=2_000,
+        self.parser.add_argument('--progressive_step_every', type=int, default=4000,
                                  help="Amount of training steps for each progressive step")
 
         # Save additional training info to enable future training continuation from produced checkpoints
@@ -79,6 +80,15 @@ class TrainOptions:
         self.parser.add_argument('--update_param_list', nargs='+', type=str, default=None,
                                  help="Name of training parameters to update the loaded training checkpoint")
 
+        self.parser.add_argument('--n_GPUs', type=int, default=1,
+                help='number of GPUs')
+        
+        self.parser.add_argument('--cpu', action='store_true',
+                        help='use cpu only')
+        
+        self.parser.add_argument('--model', type=str, default='ResNet18',
+                    help='test dataset name')
+    
     def parse(self):
         opts = self.parser.parse_args()
         return opts

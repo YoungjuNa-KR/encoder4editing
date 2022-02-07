@@ -22,7 +22,7 @@ def l2_norm(input, axis=1):
 class Bottleneck(namedtuple('Block', ['in_channel', 'depth', 'stride'])):
     """ A named tuple describing a ResNet block. """
 
-
+''''''
 def get_block(in_channel, depth, num_units, stride=2):
     return [Bottleneck(in_channel, depth, stride)] + [Bottleneck(depth, depth, 1) for i in range(num_units - 1)]
 

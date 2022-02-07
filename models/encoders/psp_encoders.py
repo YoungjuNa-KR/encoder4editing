@@ -19,16 +19,16 @@ class ProgressiveStage(Enum):
     Delta6Training = 6
     Delta7Training = 7
     Delta8Training = 8
-    Delta9Training = 9
-    Delta10Training = 10
-    Delta11Training = 11
-    Delta12Training = 12
-    Delta13Training = 13
-    Delta14Training = 14
-    Delta15Training = 15
-    Delta16Training = 16
-    Delta17Training = 17
-    Inference = 18
+    # Delta9Training = 9
+    # Delta10Training = 10
+    # Delta11Training = 11
+    # Delta12Training = 12
+    # Delta13Training = 13
+    # Delta14Training = 14
+    # Delta15Training = 15
+    # Delta16Training = 16
+    # Delta17Training = 17
+    Inference = 9
 
 
 class GradualStyleBlock(Module):

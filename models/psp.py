@@ -35,6 +35,7 @@ class pSp(nn.Module):
         self.load_weights()
         
 
+    ''' ENCODER SETTING '''
     def set_encoder(self):
         if self.opts.encoder_type == 'GradualStyleEncoder':
             encoder = psp_encoders.GradualStyleEncoder(50, 'ir_se', self.opts)
@@ -46,6 +47,7 @@ class pSp(nn.Module):
             raise Exception('{} is not a valid encoders'.format(self.opts.encoder_type))
         return encoder
 
+    ''' LOAD WEGIHTS '''
     def load_weights(self):
         if self.opts.checkpoint_path is not None:
             print('Loading e4e over the pSp framework from checkpoint: {}'.format(self.opts.checkpoint_path))
@@ -62,6 +64,7 @@ class pSp(nn.Module):
             self.decoder.load_state_dict(ckpt['g_ema'], strict=False)
             self.__load_latent_avg(ckpt, repeat=self.encoder.style_count)
 
+
     def forward(self, x, resize=True, latent_mask=None, input_code=False, randomize_noise=True,
                 inject_latent=None, return_latents=False, alpha=None):
         if input_code:
@@ -71,7 +74,7 @@ class pSp(nn.Module):
             # normalize with respect to the center of an average face
             if self.opts.start_from_latent_avg:
                 if codes.ndim == 2:
-                    codes = codes + self.latent_avg.repeat(codes.shape[0], 1, 1)[:, 0, :]
+                        codes = codes + self.latent_avg.repeat(codes.shape[0], 1, 1)[:, 0, :]
                 else:
                     codes = codes + self.latent_avg.repeat(codes.shape[0], 1, 1)
 

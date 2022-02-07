@@ -38,11 +38,21 @@ DATASETS = {
 		'test_source_root': dataset_paths['cats_test'],
 		'test_target_root': dataset_paths['cats_test'],
 	},
+ 
+	# VILAB adds
 	'mpii_encode': {
 		'transforms': transforms_config.EncodeTransforms,
 		'train_source_root': dataset_paths['mpii_train'],
 		'train_target_root': dataset_paths['mpii_train'],
 		'test_source_root': dataset_paths['mpii_test'],
 		'test_target_root': dataset_paths['mpii_test'],
-	}
+	},
+ 
+	'eth_256_encode': {
+		'transforms': transforms_config.EncodeTransforms,
+		'train_source_root': dataset_paths['eth_256_train'],
+		'train_target_root': dataset_paths['eth_256_train'],
+		'test_source_root': dataset_paths['eth_256_val'],
+		'test_target_root': dataset_paths['eth_256_val'],
+	},
 }

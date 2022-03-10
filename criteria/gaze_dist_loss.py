@@ -11,10 +11,7 @@ import numpy as np
 # from criteria.gaze_option import args
 from options.train_options import TrainOptions
 from criteria.getGazeLoss import computeGazeLoss
-'''
-    PureGaze에서는 Gaze에 필요 없는 정보를 제거하는 Adversarial Network를 고안하여 시선 추정을 개선했지만,
-    우리 모델에서는 Encoder를 사용하여 시선 추정에 관한 정보는 더욱 분명하게 만들고, 그 외적인 정보는 제거한다.
-'''
+
 
 class GazeDistortionLoss(nn.Module):
     def __init__(self):       
@@ -70,7 +67,7 @@ class GazeDistortionLoss(nn.Module):
             gaze_loss, angular_error = computeGazeLoss(y_hat_feats, labels)
             gd_logs.append({'gaze_target': float(angular_error)})
             
-            loss += angular_error
+            loss += gaze_loss
             # id_diff = float(diff_target) - float(diff_views)
             # sim_improvement += id_diff
             count += 1

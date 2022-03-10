@@ -30,13 +30,13 @@ class TrainOptions:
         self.parser.add_argument('--id_lambda', default=0.1, type=float, help='ID loss multiplier factor')
         self.parser.add_argument('--l2_lambda', default=1.0, type=float, help='L2 loss multiplier factor')
         ''' for gaze distortion loss '''
-        self.parser.add_argument('--gd_lambda', default=0.01, type=float, help='Gaze distortion loss multiplier factor')
+        self.parser.add_argument('--gd_lambda', default=-1, type=float, help='Gaze distortion loss multiplier factor')
 
         self.parser.add_argument('--stylegan_weights', default=model_paths['stylegan_ffhq'], type=str,
                                  help='Path to StyleGAN model weights')
         self.parser.add_argument('--stylegan_size', default=256, type=int,
                                  help='size of pretrained StyleGAN Generator')
-        self.parser.add_argument('--checkpoint_path', default=None, type=str, help='Path to pSp model checkpoint')
+        self.parser.add_argument('--checkpoint_path', default='/home/vimlab/Downloads/eth_eht_iteration_200000.pt', type=str, help='Path to pSp model checkpoint')
 
         self.parser.add_argument('--max_steps', default=500000, type=int, help='Maximum number of training steps')
         self.parser.add_argument('--image_interval', default=100, type=int,

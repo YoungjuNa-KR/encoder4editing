@@ -37,8 +37,6 @@ def computeGazeLoss(angular_out, gaze_batch_label):
         else:
             theta_angular_error += np.abs(GT_theta - EST_theta)
     
-    # 추후에 인식된 모든 사람 수를 고려하여 평균을 내주어야 한다.
-    # angular_error는 Pi 와 Theta 각도만을 고려하여 계산되었다.
     angular_error = (pi_angular_error + theta_angular_error)*45
         
     return gaze_loss, angular_error

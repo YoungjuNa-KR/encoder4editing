@@ -133,4 +133,12 @@ notebooks/
 notebooks/*
 pretrained_models/
 pretrained_models/*
+*.pt
+*.jpg
+*.zip
+*.tar.xz
+*.txt
+new/
+pretrained_models/
+infer_resized_mpii_with_eth_encoder
 

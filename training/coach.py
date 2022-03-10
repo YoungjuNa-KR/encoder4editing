@@ -40,9 +40,9 @@ class Coach:
         if self.opts.lpips_lambda > 0:
             self.lpips_loss = LPIPS(net_type=self.opts.lpips_type).to(self.device).eval()
         if self.opts.id_lambda > 0:
-            if 'ffhq' in self.opts.dataset_type or 'celeb' in self.opts.dataset_type or 'mpii_encode' in self.opts.dataset_type or 'eth_256_encode' in self.opts.dataset_type:  # 여기에 얼굴 데이터 추가해야 함. (ArcFace를 사용하기 위해서)
+            if 'ffhq' in self.opts.dataset_type or 'celeb' in self.opts.dataset_type or 'mpii_encode' in self.opts.dataset_type or 'eth_256_encode' in self.opts.dataset_type:
                 self.id_loss = id_loss.IDLoss().to(self.device).eval()
-            else: #MOCO LOSS는 car, horses 등 사람이 아닌 경우에 사용함.
+            else: # if not human face
                 self.id_loss = moco_loss.MocoLoss(opts).to(self.device).eval()
         
         ''' for gaze distortion loss'''

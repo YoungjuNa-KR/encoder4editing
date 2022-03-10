@@ -10,6 +10,7 @@ class InferenceDataset(Dataset):
 		self.transform = transform
 		self.preprocess = preprocess
 		self.opts = opts
+		self.img_names = []
 
 	def __len__(self):
 		return len(self.paths)
@@ -22,4 +23,7 @@ class InferenceDataset(Dataset):
 			from_im = Image.open(from_path).convert('RGB')
 		if self.transform:
 			from_im = self.transform(from_im)
-		return from_im
+   
+		img_name = from_path.split('/')[-1]
+		img_name = img_name[:-4]
+		return from_im, img_name 

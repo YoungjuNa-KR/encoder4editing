@@ -1,26 +1,3 @@
-# Ranger deep learning optimizer - RAdam + Lookahead + Gradient Centralization, combined into one optimizer.
-
-# https://github.com/lessw2020/Ranger-Deep-Learning-Optimizer
-# and/or
-# https://github.com/lessw2020/Best-Deep-Learning-Optimizers
-
-# Ranger has now been used to capture 12 records on the FastAI leaderboard.
-
-# This version = 20.4.11
-
-# Credits:
-# Gradient Centralization --> https://arxiv.org/abs/2004.01461v2 (a new optimization technique for DNNs), github:  https://github.com/Yonghongwei/Gradient-Centralization
-# RAdam -->  https://github.com/LiyuanLucasLiu/RAdam
-# Lookahead --> rewritten by lessw2020, but big thanks to Github @LonePatient and @RWightman for ideas from their code.
-# Lookahead paper --> MZhang,G Hinton  https://arxiv.org/abs/1907.08610
-
-# summary of changes:
-# 4/11/20 - add gradient centralization option.  Set new testing benchmark for accuracy with it, toggle with use_gc flag at init.
-# full code integration with all updates at param level instead of group, moves slow weights into state dict (from generic weights),
-# supports group learning rates (thanks @SHolderbach), fixes sporadic load from saved model issues.
-# changes 8/31/19 - fix references to *self*.N_sma_threshold;
-# changed eps to 1e-5 as better default than 1e-8.
-
 import math
 import torch
 from torch.optim.optimizer import Optimizer

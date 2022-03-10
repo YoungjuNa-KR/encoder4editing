@@ -432,11 +432,9 @@ class Generator(nn.Module):
             self.noises.register_buffer(f'noise_{layer_idx}', torch.randn(*shape))
 
         ''' ------------------------ FROM HERE ------------------------ '''
-        print("반복 횟수: ", self.log_size - 3)
+        
         for i in range(3, self.log_size + 1):
             out_channel = self.channels[2 ** i]
-            
-            print("n:", i, ":", "in:", in_channel, "out:", out_channel)
             
             if i == 6:
                 in_channel = 512
@@ -448,7 +446,6 @@ class Generator(nn.Module):
                 in_channel = 128
                 out_channel = 64
                 
-            print("i:", i)
             
             self.convs.append(
                 StyledConv(
@@ -469,10 +466,7 @@ class Generator(nn.Module):
             self.to_rgbs.append(ToRGB(out_channel, style_dim))
 
             
-            
-            
-            print(self.convs)
-            print("\n"*3)
+
             in_channel = out_channel
 
         self.n_latent = self.log_size * 2 - 2

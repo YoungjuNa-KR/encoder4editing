@@ -32,7 +32,7 @@ class ImagesDataset(Dataset):
 		img_name = img_name.split(".")[0]
 		# print(img_name)
 		labels = self.label[img_name]
- 
+
 		to_path = self.target_paths[index]
 		to_im = Image.open(to_path).convert('RGB')
 		if self.target_transform:
